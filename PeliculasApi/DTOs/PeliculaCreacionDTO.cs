@@ -12,7 +12,14 @@ namespace PeliculasApi.DTOs
         public IFormFile Poster { get; set; }
 
         //Queremos recibir el listado Id de generos para crear la película con los genéros al cuál pertenece
-        [ModelBinder(BinderType = typeof(TypeBinder))]
+        /*
+         * Al utilizar FromForm (ver los parámetros enviados al controlador POST de creación de película)
+         * modifica el comportamiento por defecto del ModelBinder, por lo que creamos un helper, para indicarle lo que debe hacer
+         */
+        [ModelBinder(BinderType = typeof(TypeBinder<List<int>>))]
         public List<int> GeneroIDs { get; set; }
+
+        [ModelBinder(BinderType = typeof(TypeBinder<List<ActorPeliculasCreacionDTO>>))]
+        public List<ActorPeliculasCreacionDTO> Actores { get; set; }
     }
 }

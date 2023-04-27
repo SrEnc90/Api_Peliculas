@@ -5,7 +5,7 @@ namespace PeliculasApi.Helpers
     public static class QueryableExtensions
     {
         /*
-         * AL colocar this IQueryable<T> como parámetro sstamos extendiendo la funciones de IQueryable para que incluya este método.
+         * AL colocar this IQueryable<T> como parámetro estamos extendiendo la funciones de IQueryable para que incluya este método.
          * y como es static para invocarlo solo debemos colocar IQueryable.Paginar(parámetros)
          */
         public static IQueryable<T> Paginar<T>(this IQueryable<T> queryable, PaginacionDTO paginacionDTO)

@@ -14,7 +14,7 @@ namespace PeliculasApi.Controllers
 {
     [ApiController]
     [Route("api/actores")]
-    public class ActoresController : ControllerBase
+    public class ActoresController : CustomBaseController
     {
         private readonly ApplicationDbContext context;
         private readonly IMapper mapper;
@@ -23,6 +23,7 @@ namespace PeliculasApi.Controllers
 
         public ActoresController(ApplicationDbContext context, IMapper mapper,
             IAlmacenadorArchivos almacenadorArchivos)
+            : base(context, mapper)
         {
             this.context = context;
             this.mapper = mapper;
@@ -36,6 +37,8 @@ namespace PeliculasApi.Controllers
         [HttpGet]
         public async Task<ActionResult<List<ActorDTO>>> Get([FromQuery] PaginacionDTO paginacionDTO)
         {
+            return await Get<Actor, ActorDTO>(paginacionDTO);
+            /*
             var querable = context.Actores.AsQueryable();
 
             //Amobs métodos son extensiones de sus respectivas clases y se encuentran creadas en la carpeta de Helpers
@@ -43,17 +46,20 @@ namespace PeliculasApi.Controllers
             var entidades = await querable.Paginar(paginacionDTO).ToListAsync();
 
             return mapper.Map<List<ActorDTO>>(entidades);
-
+            */
         }
 
         [HttpGet("{id}", Name = "obtenerActor")]
         public async Task<ActionResult<ActorDTO>> Get(int id)
         {
+            return await Get<Actor, ActorDTO>(id);
+            /*
             var entidad = await context.Actores.FirstOrDefaultAsync(x => x.Id == id);
 
             if (entidad == null) { return NotFound(); }
 
             return mapper.Map<ActorDTO>(entidad);
+            */
         }
 
         [HttpPost]
@@ -127,6 +133,8 @@ namespace PeliculasApi.Controllers
         [HttpPatch("{id}")]
         public async Task<ActionResult> Patch(int id, [FromBody] JsonPatchDocument<ActorPatchDTO> patchDocument)
         {
+            return await Patch<Actor, ActorPatchDTO>(id, patchDocument);
+            /*
             if (patchDocument == null) { return BadRequest(); }
 
             var entidadDB = await context.Actores.FirstOrDefaultAsync(x => x.Id == id);
@@ -148,11 +156,14 @@ namespace PeliculasApi.Controllers
             await context.SaveChangesAsync();
 
             return NoContent();
+            */
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
+            return await Delete<Actor>(id);
+            /*
             var existe = await context.Actores.AnyAsync(x => x.Id == id);
 
             if(!existe) { return NotFound(); }
@@ -162,6 +173,7 @@ namespace PeliculasApi.Controllers
             await context.SaveChangesAsync();
 
             return NoContent();
+            */
         }
     }
 }

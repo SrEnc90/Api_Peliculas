@@ -2,7 +2,7 @@
 
 namespace PeliculasApi.Entidades
 {
-    public class Actor
+    public class Actor : IId //implementamos la interfaz para que implemente el campo Id
     {
         public int Id { get; set; }
         [Required]
@@ -10,5 +10,6 @@ namespace PeliculasApi.Entidades
         public string Nombre { get; set; }
         public DateTime FechaNacimiento { get; set; }
         public string Foto { get; set; }//Vamos a guardar la URL de la imagen
+        public List<PeliculasActores> PeliculasActores { get; set; }
     }
 }

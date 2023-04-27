@@ -9,45 +9,32 @@ namespace PeliculasApi.Controllers
 {
     [ApiController]
     [Route("api/generos")]
-    public class GenerosController : ControllerBase
+    public class GenerosController : CustomBaseController
     {
-        private readonly ApplicationDbContext context;
-        private readonly IMapper mapper;
-
-        public GenerosController(ApplicationDbContext context, IMapper mapper)
+        public GenerosController(ApplicationDbContext context, 
+            IMapper mapper)
+            :base(context,mapper) //el base representa el constructor de la clase que heredamo y q en esta situación le pasamos el context y el mapper
         {
-            this.context = context;
-            this.mapper = mapper;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<GeneroDTO>>> Get()
         {
-            var entidades = await context.Generos.ToListAsync();
-
-            var dtos = mapper.Map<List<GeneroDTO>>(entidades);
-
-            return dtos;
+            return await Get<Genero, GeneroDTO>();//Estoy utilizando el CustomBaseController
         }
 
         [HttpGet("{id:int}", Name = "obtenerGenero")]
         public async Task<ActionResult<GeneroDTO>> Get(int id)
         {
-            var entidad = await context.Generos.FirstOrDefaultAsync(x => x.Id == id);
-
-            if (entidad == null)
-            {
-                return NotFound();
-            }
-
-            var dto = mapper.Map<GeneroDTO>(entidad);
-
-            return dto;
+            return await Get<Genero, GeneroDTO>(id);//Estoy utilizando el CustomBaseController
         }
 
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] GeneroCreacionDTO generoCreacionDTO)
         {
+            return await Post<GeneroCreacionDTO, Genero, GeneroDTO>(generoCreacionDTO, "obtenerGenero");
+            /*
+             * Estamos utilizando el método que la clase CustomBaseController
             var entidad = mapper.Map<Genero>(generoCreacionDTO);
 
             context.Add(entidad);
@@ -59,11 +46,15 @@ namespace PeliculasApi.Controllers
 
             //Debemos colocarle nombre a la ruta o endpoint que vamos a redireccionar
             return new CreatedAtRouteResult("obtenerGenero", new { id = generoDTO.Id }, generoDTO);
+            */
         }
 
         [HttpPut("{id:int}")]
         public async Task<ActionResult> Put(int id, [FromBody] GeneroCreacionDTO generoCreacionDTO)
         {
+            return await Put<GeneroCreacionDTO, Genero>(id, generoCreacionDTO);
+
+            /*
             var entidad = mapper.Map<Genero>(generoCreacionDTO);
 
             entidad.Id = id;
@@ -73,11 +64,15 @@ namespace PeliculasApi.Controllers
             await context.SaveChangesAsync();
 
             return NoContent();
+            */
         }
 
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete(int id)
         {
+            return await Delete<Genero>(id);
+
+            /*
             var existe = await context.Generos.AnyAsync(x => x.Id == id);
 
             if (!existe)
@@ -90,6 +85,7 @@ namespace PeliculasApi.Controllers
             await context.SaveChangesAsync();
 
             return NoContent();
+            */
         }
     }
 }
