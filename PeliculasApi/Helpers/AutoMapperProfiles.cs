@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using NetTopologySuite.Geometries;
 using PeliculasApi.DTOs;
 using PeliculasApi.Entidades;
 using PeliculasApi.Migrations;
@@ -8,13 +10,25 @@ namespace PeliculasApi.Helpers
     //Para que esta clase sea un perfil de automapper, debemos heredar de Profile
     public class AutoMapperProfiles : Profile
     {
-        public AutoMapperProfiles()
+        public AutoMapperProfiles(GeometryFactory geometryFactory)
         {
             CreateMap<Genero, GeneroDTO>().ReverseMap(); //Convertirmos objetos a generoDTO y con ReserverMap indicamos que tb lo vamos hacer al revés
             CreateMap<GeneroCreacionDTO, Genero>(); //Del GeneroCreacionDTo lo voy a pasar a Genero y de ahí a la BBDD
 
-            CreateMap<SalaDeCine,SalaDeCineDTO>().ReverseMap();
-            CreateMap<SalaDeCineCreacionDTO,SalaDeCine>();
+            CreateMap<IdentityUser, UsuarioDTO>();
+
+            //CreateMap<SalaDeCine,SalaDeCineDTO>().ReverseMap(); la converción va hacer complejo, por lo que mejor se elimina el ReverseMap y se coloca individualmente en dos líneas
+            CreateMap<SalaDeCine, SalaDeCineDTO>()
+                .ForMember(x => x.Latitud, x => x.MapFrom(y => y.Ubicacion.Y)) // mapeando desde el Point hacia la latitud
+                .ForMember(x => x.Longitud, x => x.MapFrom(y => y.Ubicacion.X)); // mapeando desde el Point hacia la longitud
+
+            CreateMap<SalaDeCineDTO, SalaDeCine>() //convirtiendo desde la latitud y longitud hacia un point, para ello pasamos como parámetro del constructor el GeometryFactory
+                .ForMember(x => x.Ubicacion, x => x.MapFrom(y =>
+                    geometryFactory.CreatePoint(new Coordinate(y.Longitud, y.Latitud))));
+
+            CreateMap<SalaDeCineCreacionDTO,SalaDeCine>()
+                 .ForMember(x => x.Ubicacion, x => x.MapFrom(y =>
+                    geometryFactory.CreatePoint(new Coordinate(y.Longitud, y.Latitud))));
 
             CreateMap<Actor, ActorDTO>().ReverseMap();
             CreateMap<ActorCreacionDTO, Actor>()

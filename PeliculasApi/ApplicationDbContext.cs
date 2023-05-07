@@ -3,10 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite;
 using PeliculasApi.Entidades;
+using NetTopologySuite.Geometries;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace PeliculasApi
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext //En vez del DbContext estamos usando Microsoft.AspNetCore.Identity.EntityFrameworkCore; los cuales ya implementan los DbSet users y roles
     {
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
@@ -28,14 +31,15 @@ namespace PeliculasApi
 
             SeedData(modelBuilder);
 
-            base.OnModelCreating(modelBuilder); //importante no borrar esta línea de código
+            base.OnModelCreating(modelBuilder); //importante no borrar esta línea de código, si se borrar al hacer la migración va a salir un mensaje de error
         }
 
         private void SeedData(ModelBuilder modelBuilder)
         {
 
-            var rolAdminId = "9aae0b6d-d50c-4d0a-9b90-2a6873e3845d";
-            var usuarioAdminId = "5673b8cf-12de-44f6-92ad-fae4a77932ad";
+            //Agregando un usuario con rol de Admin
+            var rolAdminId = "26e113ca-f0e4-488d-aef8-2a7f8ada6b79"; //Estamos utilizando la pagína https://guidgenerator.com/online-guid-generator.aspx para generar nuestros IDs
+            var usuarioAdminId = "a99fb79b-2b38-4436-b1a6-a7ec22b9aa47";
 
             var rolAdmin = new IdentityRole()
             {
@@ -46,7 +50,7 @@ namespace PeliculasApi
 
             var passwordHasher = new PasswordHasher<IdentityUser>();
 
-            var username = "felipe@hotmail.com";
+            var username = "carlos@hotmail.com";
 
             var usuarioAdmin = new IdentityUser()
             {
@@ -57,6 +61,14 @@ namespace PeliculasApi
                 NormalizedEmail = username,
                 PasswordHash = passwordHasher.HashPassword(null, "Aa123456!")
             };
+
+            /*Comentamos para hacer la migracion TablasIdentity que genera la clase 20230502001553_TablasIdentity 
+             Luego de hacer la migración, descomentamos*/
+
+            /* ConcurrencyStamp Sirve para evitar errores de concruencia, el problema estás en que cada vez que haga una migración 
+             * y el campo haya cambiado, en la migracion va decir que si se quiere actualizar el currencyStamp */
+
+            #region Codigo a comentar y descomentar
 
             //modelBuilder.Entity<IdentityUser>()
             //    .HasData(usuarioAdmin);
@@ -73,18 +85,17 @@ namespace PeliculasApi
             //        ClaimValue = "Admin"
             //    });
 
+            #endregion
+
             var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-            
-            /*
+
             modelBuilder.Entity<SalaDeCine>()
-               .HasData(new List<SalaDeCine>
-               {
-                    //new SalaDeCine{Id = 1, Nombre = "Agora", Ubicacion = geometryFactory.CreatePoint(new Coordinate(-69.9388777, 18.4839233))},
-                    new SalaDeCine{Id = 4, Nombre = "Sambil", Ubicacion = geometryFactory.CreatePoint(new Coordinate(-69.9118804, 18.4826214))},
-                    new SalaDeCine{Id = 5, Nombre = "Megacentro", Ubicacion = geometryFactory.CreatePoint(new Coordinate(-69.856427, 18.506934))},
-                    new SalaDeCine{Id = 6, Nombre = "Village East Cinema", Ubicacion = geometryFactory.CreatePoint(new Coordinate(-73.986227, 40.730898))}
-               });
-            */
+                .HasData(new List<SalaDeCine>
+                {
+                    new SalaDeCine{Id=4,Nombre="Sambil",Ubicacion=geometryFactory.CreatePoint(new Coordinate(-69.913860,18.483352) )},
+                    new SalaDeCine{Id=5,Nombre="MegaCentro",Ubicacion=geometryFactory.CreatePoint(new Coordinate(-69.856569, 18.505571 )) },
+                    new SalaDeCine{Id=6,Nombre="Village East Cinema",Ubicacion=geometryFactory.CreatePoint(new Coordinate(-73.987491,40.730952)) }
+                });
 
             var aventura = new Genero() { Id = 4, Nombre = "Aventura" };
             var animation = new Genero() { Id = 5, Nombre = "Animación" };
