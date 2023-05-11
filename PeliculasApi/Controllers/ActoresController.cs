@@ -37,7 +37,6 @@ namespace PeliculasApi.Controllers
         [HttpGet]
         public async Task<ActionResult<List<ActorDTO>>> Get([FromQuery] PaginacionDTO paginacionDTO)
         {
-            return await Get<Actor, ActorDTO>(paginacionDTO);
             /*
             var querable = context.Actores.AsQueryable();
 
@@ -47,6 +46,9 @@ namespace PeliculasApi.Controllers
 
             return mapper.Map<List<ActorDTO>>(entidades);
             */
+         
+            return await Get<Actor, ActorDTO>(paginacionDTO);
+
         }
 
         [HttpGet("{id}", Name = "obtenerActor")]
@@ -133,7 +135,6 @@ namespace PeliculasApi.Controllers
         [HttpPatch("{id}")]
         public async Task<ActionResult> Patch(int id, [FromBody] JsonPatchDocument<ActorPatchDTO> patchDocument)
         {
-            return await Patch<Actor, ActorPatchDTO>(id, patchDocument);
             /*
             if (patchDocument == null) { return BadRequest(); }
 
@@ -157,6 +158,8 @@ namespace PeliculasApi.Controllers
 
             return NoContent();
             */
+
+            return await Patch<Actor, ActorPatchDTO>(id, patchDocument);
         }
 
         [HttpDelete("{id}")]

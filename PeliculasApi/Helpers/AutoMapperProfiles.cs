@@ -15,6 +15,11 @@ namespace PeliculasApi.Helpers
             CreateMap<Genero, GeneroDTO>().ReverseMap(); //Convertirmos objetos a generoDTO y con ReserverMap indicamos que tb lo vamos hacer al revés
             CreateMap<GeneroCreacionDTO, Genero>(); //Del GeneroCreacionDTo lo voy a pasar a Genero y de ahí a la BBDD
 
+            CreateMap<Review, ReviewDTO>()
+                .ForMember(x => x.NombreUsuario, x => x.MapFrom(y => y.Usuario.UserName)); //En la clase ReviewDTO tenemos el NombreUsuario que provieve de la clase Usuario, debemos navegar hasta la clase Usuario
+            CreateMap<ReviewDTO, Review>();
+            CreateMap<ReviewCreacionDTO, Review>();
+
             CreateMap<IdentityUser, UsuarioDTO>();
 
             //CreateMap<SalaDeCine,SalaDeCineDTO>().ReverseMap(); la converción va hacer complejo, por lo que mejor se elimina el ReverseMap y se coloca individualmente en dos líneas

@@ -38,6 +38,8 @@ namespace PeliculasApi
             //Injectando el GeometryFactory con las coordenadas terrestres para utilizarlo en la clase AutoMapperProfile
             services.AddSingleton<GeometryFactory>(NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326));
 
+            services.AddScoped<PeliculaExisteAttribute>();
+
             services.AddSingleton(provider =>
                 new MapperConfiguration(config =>
                 {

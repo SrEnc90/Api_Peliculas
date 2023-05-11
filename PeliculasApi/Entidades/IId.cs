@@ -1,4 +1,5 @@
-﻿namespace PeliculasApi.Entidades
+﻿
+namespace PeliculasApi.Entidades
 {
     public interface IId
     {

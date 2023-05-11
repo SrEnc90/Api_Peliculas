@@ -31,11 +31,26 @@ namespace PeliculasApi.Controllers
         protected async Task<List<TDTO>> Get<TEntidad, TDTO>(PaginacionDTO paginacionDTO) 
             where TEntidad: class
         {
-            var querable = context.Set<TEntidad>().AsQueryable();
-
+            var queryable = context.Set<TEntidad>().AsQueryable();
+            
+            /* Ahora vamos a reutilizar el método de Get que está abajo
             //Ambos métodos son extensiones de sus respectivas clases y se encuentran creadas en la carpeta de Helpers
-            await HttpContext.InsertarParametrosPaginacion(querable, paginacionDTO.CantidadRegistrosPorPagina);
-            var entidades = await querable.Paginar(paginacionDTO).ToListAsync();
+            await HttpContext.InsertarParametrosPaginacion(queryable, paginacionDTO.CantidadRegistrosPorPagina);
+            var entidades = await queryable.Paginar(paginacionDTO).ToListAsync();
+
+            return mapper.Map<List<TDTO>>(entidades);
+            */
+
+            return await Get<TEntidad, TDTO>(paginacionDTO, queryable);
+        }
+    
+        protected async Task<List<TDTO>> Get<TEntidad, TDTO>(PaginacionDTO paginacionDTO, //Método para el controller review
+            IQueryable<TEntidad> queryable)
+           where TEntidad : class
+        {
+            //Ambos métodos son extensiones de sus respectivas clases y se encuentran creadas en la carpeta de Helpers
+            await HttpContext.InsertarParametrosPaginacion(queryable, paginacionDTO.CantidadRegistrosPorPagina);
+            var entidades = await queryable.Paginar(paginacionDTO).ToListAsync();
 
             return mapper.Map<List<TDTO>>(entidades);
         }
@@ -43,7 +58,7 @@ namespace PeliculasApi.Controllers
         protected async Task<ActionResult<TDTO>> Get<TEntidad, TDTO>(int id) where TEntidad: class, IId //utilizamos la interfaz creada(IId) para asegurarnos que debe tener campo de Id
         {
             var entidad = await context.Set<TEntidad>().AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
-            if(entidad == null) { NotFound(); }
+            if(entidad == null) { return NotFound(); }
             return mapper.Map<TDTO>(entidad);
         }
 

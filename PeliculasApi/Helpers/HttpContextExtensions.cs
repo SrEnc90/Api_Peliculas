@@ -6,7 +6,7 @@ namespace PeliculasApi.Helpers
     public static class HttpContextExtensions
     {
         /*
-         * AL colocar this HttpContext como parámetros estamos extendiendo la funciones de HttpContext para que incluya este método.
+         * Al colocar this HttpContext como parámetros estamos extendiendo la funciones de HttpContext para que incluya este método.
          * y como es static para invocarlo solo debemos colocar HttpContext.InsertarParametrosPaginacion(parámetros)
          */
         public async static Task InsertarParametrosPaginacion<T>(this HttpContext httpContext,
