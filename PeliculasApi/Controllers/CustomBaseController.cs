@@ -107,6 +107,7 @@ namespace PeliculasApi.Controllers
             patchDocument.ApplyTo(entidadDTO, ModelState);
 
             var esValido = TryValidateModel(entidadDTO);
+
             if (!esValido)
             {
                 return BadRequest(ModelState);

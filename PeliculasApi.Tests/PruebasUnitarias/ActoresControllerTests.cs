@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.JsonPatch.Operations;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace PeliculasApi.Tests.PruebasUnitarias
 {
@@ -155,16 +157,33 @@ namespace PeliculasApi.Tests.PruebasUnitarias
             var contexto2 = ConstruirContext(nombreBD);
             var controller = new ActoresController(contexto2, mapper, null); //Colocamos null xq no nos interesa almacenar la imagen(ya no vamos a probar eso)
 
+            /*En el método patch dentro de ActoresController se instancia y se trabaja con TryValidateModel que es un método del ControllerBase
+             * por lo cuál debemos proveerle de dicho método a nuestro test para que pase o apruebe el validador
+             */
             var objectValidator = new Mock<IObjectModelValidator>();
+            /*Con el código de abajo indicamos que le vamos a mandar cualquier context, con cualquier Validation, con cualquier string,
+             * con cualquier objeto va a aprobar la el Validate
+             */
             objectValidator.Setup(x => x.Validate(
-                It.IsAny<ActionContext>(),
-                It.IsAny<ValidationStateDictionary>(),
-                It.IsAny<string>(),
+                It.IsAny<ActionContext>(), // It.IsAny significa que va hacer cualquier cosa (cualquier validation va ser actionContext)
+                It.IsAny<ValidationStateDictionary>(), //It.IsAny sea cualquier Validation
+                It.IsAny<string>(), //It.IsAny sea cualquier string
                 It.IsAny<object>())
             );
 
             controller.ObjectValidator = objectValidator.Object;
 
+            var patchDoc = new JsonPatchDocument<ActorPatchDTO>();
+            //new Operation<ActorPatchDTO>("Operacion que vamos hacer", "campo del objeto que queremos cambiar ", null, "Nuevo valor que vamos a cambiar")
+            patchDoc.Operations.Add(new Operation<ActorPatchDTO>("replace", "/Nombre", null, "Patricia"));
+            var respuesta = await controller.Patch(1, patchDoc);
+            var resultado = respuesta as StatusCodeResult;
+            Assert.AreEqual(204, resultado.StatusCode);
+
+            var contexto3 = ConstruirContext(nombreBD);
+            var actorDB = await contexto3.Actores.FirstAsync();
+            Assert.AreEqual("Patricia", actorDB.Nombre);
+            Assert.AreEqual(fechaNacimiento, actorDB.FechaNacimiento);
         }
     }
 }

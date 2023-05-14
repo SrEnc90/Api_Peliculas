@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PeliculasApi.Controllers;
 using PeliculasApi.DTOs;
 using PeliculasApi.Entidades;
