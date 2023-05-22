@@ -84,7 +84,7 @@ namespace PeliculasApi.Tests.PruebasUnitarias
             MockAuth(httpContext);
             var signInManager = SetupSignInManager(userManager, httpContext);
 
-            //Creamos un diccionario para simular un json web Token y pasarselo al IConfigurarion
+            //Creamos un diccionario para simular un json web Token y pasarselo al IConfigurarion, podemos copiar la misma key del appsetting.json
             var miConfiguracion = new Dictionary<string, string>
             {
                 {"jwt:key","FSDAFSDFJKLASJFDSKJFNFASDFKSADHFSANFASKHKLFASDFKJASDLFKSDAJFLJFLSADJFLJSADFNS1234654AFJSDHFKFHKFSHAJHFKSAHFDSAJKF" }
